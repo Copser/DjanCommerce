@@ -24,8 +24,7 @@
         .container-narrow > hr {
             margin: 30px 0;
         }
-        
-        /* Main marketing message and sign up button */
+      /* Main marketing message and sign up button */
         .jumbotron {
             margin: 60px 0;
             text-align: center;
@@ -57,18 +56,20 @@
             {% endblock %}
         });
     </script>
-</head>  
+</head>
 <body>
    <div class="container-narrow">
-       
-       <div class="name">
-           <ul class="nav nav-pills pull-right">
-               <li><a href="{% url 'home' %}">Home</a></li>
-               <li><a href="#">About</a></li>
-               <li><a href="#">Contact</a></li>
-           </ul>
-           <h3><span class="fui-settings-16 muted">Your MVP!</span></h3>
-       </div>
+
+       <div class="header clearfix">
+        <nav>
+          <ul class="nav nav-pills pull-right">
+            <li role="presentation" class="active"><a href="{% url 'home' %}">Home</a></li>
+            <li role="presentation"><a href="#">About</a></li>
+            <li role="presentation"><a href="#">Contact</a></li>
+          </ul>
+        </nav>
+        <h3 class="text-muted">Project name</h3>
+      </div>
 
        <hr>
 
@@ -90,10 +91,10 @@
        <hr>
 
        <div class="footer">
-           <p>Copyright © 2014 <a href="http://www.yoursite.com">DjanCommerce</a>. Developed by 
+           <p>Copyright © 2014 <a href="http://www.yoursite.com">DjanCommerce</a>. Developed by
            <a href="http://realpython.com">Your Name Here</a>. Poweredby Django.</p>
        </div>
 
-   </div> 
+   </div>
 </body>
 </html>
