@@ -133,6 +133,7 @@ INSTALLED_APPS = (
     'django.contrib.flatpages',
     # App
     'main',
+    'contact',
 )
 
 SESSION_SERIALIZER = 'django.contrib.sessions.serializers.JSONSerializer'
