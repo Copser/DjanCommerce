@@ -3,7 +3,8 @@ import os
 
 # Stripe keys
 STRIPE_SECRET = 'sk_test_qyoR4GSBKKudGC6fb2yXV4Qx'
-STRIPE_PUBLISHABLE = 'pk_test_nSYDhwrOWLqRhIPCCUlABNxl'
+STRIPE_PUBLISHABLE = 'pk_test_nSYDhwrOWLqRhIPCCUlABNxL'
+
 
 PROJECT_ROOT = os.path.realpath(os.path.dirname(__file__))
 SITE_ROOT = os.path.dirname(PROJECT_ROOT)
