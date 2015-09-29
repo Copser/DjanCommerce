@@ -1,6 +1,9 @@
 # Django settings for django_ecommerce project.
 import os
 
+# Stripe keys
+STRIPE_SECRET = 'sk_test_qyoR4GSBKKudGC6fb2yXV4Qx'
+STRIPE_PUBLISHABLE = 'pk_test_nSYDhwrOWLqRhIPCCUlABNxl'
 
 PROJECT_ROOT = os.path.realpath(os.path.dirname(__file__))
 SITE_ROOT = os.path.dirname(PROJECT_ROOT)
@@ -21,7 +24,7 @@ DATABASES = {
         'USER': '',
         'PASSWORD': '',
         'HOST': '',
-        'PORT': '',                      
+        'PORT': '',
     }
 }
 
@@ -79,7 +82,7 @@ STATICFILES_DIRS = (os.path.join(SITE_ROOT, 'static'),)
 STATICFILES_FINDERS = (
     'django.contrib.staticfiles.finders.FileSystemFinder',
     'django.contrib.staticfiles.finders.AppDirectoriesFinder',
-#    'django.contrib.staticfiles.finders.DefaultStorageFinder',
+  # 'django.contrib.staticfiles.finders.DefaultStorageFinder',
 )
 
 # Make this unique, and don't share it with anybody.
@@ -89,7 +92,7 @@ SECRET_KEY = ')+t-+p^09%ia9cxn4etpr^=vj9cf@#p^wfj!z4!hi-g*j@cv#$'
 TEMPLATE_LOADERS = (
     'django.template.loaders.filesystem.Loader',
     'django.template.loaders.app_directories.Loader',
-#   'django.template.loaders.eggs.Loader',
+  # 'django.template.loaders.eggs.Loader',
 )
 
 MIDDLEWARE_CLASSES = (
