@@ -54,6 +54,14 @@
           {% endblock %}
         });
     </script>
+    <script src="https://js.stripe.com/v1/" type="text/javascript"></script>
+    <script type="text/javascript" charset="utf-8">
+        //<![CDATA[
+        Stripe.publishableKey = '{{ publishable }}';
+        //]]>
+    </script>
+    <script src="{% get_static_prefix %}jquery.js" type="text/javascript" charset="utf-8"></script>
+    <script src="{% get_static_prefix %}application.js" type="text/javascript" charset="utf-8"></script>
 </head>
 <body>
    <div class="container-narrow">
@@ -63,8 +71,14 @@
             <li role="" class="active"><a href="{% url 'home' %}">Home</a></li>
             <li role=""><a href="/pages/about">About</a></li>
             <li role=""><a href="{% url 'contact' %}">Contact</a></li>
+            {% if user %}
+            <li><a href="{% url 'sign_out' %}">Logout</a></li>
+            {% else %}
+            <li><a href="{% url 'sign_in' %}">Login</a></li>
+            <li><a href="{% url 'register' %}">Register</a></li>
+            {% endif %}
           </ul>
-        <h3 class="text-muted">Your MVP!</h3>
+        <h3 class="fui-settings-16 muted">Your MVP!</h3>
       </div>
 
        <hr>
