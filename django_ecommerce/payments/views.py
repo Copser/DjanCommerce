@@ -100,7 +100,7 @@ def register(request):
         form = UserForm()
 
     return render_to_response(
-        'render.html',
+        'register.html',
         {
             'form': form,
             'months': range(1, 12),
