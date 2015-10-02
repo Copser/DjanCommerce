@@ -14,8 +14,8 @@ stripe.api_key = settings.STRIPE_SECRET
 
 def soon():
     """TODO: Docstring for soon.
-    This function returns current datetime,
-    and the current duration between time
+    :returns: TODO
+
     """
     soon = datetime.date.today() + datetime.timedelta(days=30)
     return {'month': soon.month, 'year': soon.year}
@@ -24,9 +24,7 @@ def soon():
 def sign_in(request):
     """TODO: Docstring for sign_in.
     :returns: TODO
-    Sign in form function, checks if user make
-    a valid email and password to are db, if not
-    trows an error
+
     """
     user = None
     if request.method == "POST":
@@ -41,19 +39,18 @@ def sign_in(request):
                     form.addError('Incorrect email address or password')
             else:
                 form.addError('Incorrect email address or password')
-    else:
-        form = SigninForm()
-    print form.non_field_errors()
+        else:
+            form = SigninForm()
+        print form.non_field_errors()
 
-    return render_to_response('sign_in.html', {'form': form, 'user': user},
-                              context_instance=RequestContext(request))
+        return render_to_response('sign_in.html', {'form': form, 'user': user},
+                                  context_instance=RequestContext(request))
 
 
 def sign_out(request):
     """TODO: Docstring for sign_out.
     :returns: TODO
-    Handle sign_out from the import application,
-    when user sign out retern him on home page.
+
     """
     del request.session['user']
     return HttpResponseRedirect('/')
@@ -62,8 +59,7 @@ def sign_out(request):
 def register(request):
     """TODO: Docstring for register.
     :returns: TODO
-    Handle User registration, and user registration for
-    Stripe chargeing.
+
     """
     user = None
     if request.method == "POST":
@@ -77,13 +73,12 @@ def register(request):
                 card=form.cleaned_data['stripe_token'],
                 plan='gold',
             )
-
-            customer = stripe.Charge.create(
-                description=form.cleaned_data['email'],
-                card=form.cleaned_data['stripe_token'],
-                amount="5000",
-                currency="usd"
-            )
+            # customer = stripe.Charge.create(
+            #   description = form.cleaned_data['email'],
+            #   card = form.cleaned_data['stripe_token'],
+            #   amount="5000",
+            #   currency="usd"
+            # )
 
             user = User(
                 name=form.cleaned_data['name'],
@@ -105,7 +100,7 @@ def register(request):
         form = UserForm()
 
     return render_to_response(
-        'register.html',
+        'render.html',
         {
             'form': form,
             'months': range(1, 12),
@@ -121,9 +116,7 @@ def register(request):
 def edit(request):
     """TODO: Docstring for edit.
     :returns: TODO
-    Handles the user credit card, numbers and
-    last_4_digits, when user whant to pay for
-    a service.
+
     """
     uid = request.session.get('user')
 
