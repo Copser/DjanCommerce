@@ -16,6 +16,14 @@ class User(AbstractBaseUser):
 
     USERNAME_FIELD = 'email'
 
+    @classmethod
+    def get_by_id(cls, uid):
+        """TODO: Docstring for get_by_id.
+        :returns: TODO
+
+        """
+        return User.objects.get(pk=uid)
+
     def __str__(self):
         """TODO: Docstring for __str__.
         :returns: TODO
