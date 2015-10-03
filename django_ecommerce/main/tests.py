@@ -10,7 +10,6 @@ from django.test import TestCase
 from django.core.urlresolvers import resolve
 from django.shortcuts import render_to_response
 from django.test import RequestFactory
-from payments.models import User
 from .views import index
 
 
@@ -70,19 +69,13 @@ class MainPageTests(TestCase):
         Using mock for calls to the database.
 
         """
-        # test logic will go here
-        user = User(
-            name='jj',
-            email='j@j.com',
-        )
-
         # Create a session that appears to have a logged in user
         self.request.session = {"user": "1"}
 
         with mock.patch('main.views.User') as user_mock:
             # Tell the mock what to do when called
-            config = {'get.return_vaule': user}
-            user_mock.objects.configure_mock(**config)
+            config = {'get_by_id.return_value': mock.Mock()}
+            user_mock.configure_mock(**config)
 
             # Run the test
             resp = index(self.request)
@@ -91,6 +84,7 @@ class MainPageTests(TestCase):
             # to normal
             self.request.session = {}
 
-            expectedHtml = render_to_response(
-                'user.html', {'user': user}).content
-            self.assertEquals(resp.content, expectedHtml)
+            expected_html = render_to_response(
+                'user.html', {'user': user_mock.get_by_id(1)}
+            )
+            self.assertEquals(resp.content, expected_html.content)
