@@ -5,6 +5,7 @@ when you run "manage.py test".
 Replace this with more appropriate tests for your application.
 """
 
+import mock
 from django.test import TestCase
 from django.core.urlresolvers import resolve
 from django.shortcuts import render_to_response
@@ -73,20 +74,22 @@ class MainPageTests(TestCase):
             name='John',
             email='john@example.com',
         )
-        user.save()
 
-        # create a Mock request objec, so we can manipulate the session
-        request_factory = RequestFactory()
-        request = request_factory.get('/')
+        # Create a session that appears to have a logged in user
+        self.request.session = {"user": "1"}
 
-        # create a session that appears to heve a logged in user
-        request.session = {'user': '1'}
+        with mock.patch('main.views.User') as user_mock:
+            # Tell the mock what to do when called
+            config = {'get.return_vaule': user}
+            user_mock.objects.configure_mock(**config)
 
-        # request the index page
-        resp = index(request)
+            # Run the test
+            resp = index(self.request)
 
-        # verify the response returns the page for the logged in user
-        self.assertTemplateUsed(
-            resp.content,
-            render_to_response('user.html', {'user': user}).content
-        )
+            # Enshure that we return the state of the session back
+            # to normal
+            self.request.session = {}
+
+            expectedHtml = render_to_response(
+                'user.html', {'user': user}).content
+            self.assertEquals(resp.content, expectedHtml)
