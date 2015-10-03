@@ -67,12 +67,13 @@ class MainPageTests(TestCase):
         correctly when we have a logged-in user.
         At the end passing the view function we see will it return
         appoproiate HTML tempalte.
+        Using mock for calls to the database.
 
         """
         # test logic will go here
         user = User(
-            name='John',
-            email='john@example.com',
+            name='jj',
+            email='j@j.com',
         )
 
         # Create a session that appears to have a logged in user
