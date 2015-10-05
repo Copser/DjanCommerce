@@ -5,10 +5,13 @@ when you run "manage.py test".
 Replace this with more appropriate tests for your application.
 """
 # import unittest
-from django.test import TestCase, SimpleTestCase
+from django.test import TestCase, SimpleTestCase, RequestFactory
 from django import forms
+from django.core.urlresolvers import resolve
+from django.shortcuts import render_to_response
 from payments.models import User
 from payments.forms import SigninForm, UserForm
+from .views import sign_in, sign_out
 
 
 class UserModelTest(TestCase):
@@ -114,3 +117,92 @@ class FormTests(SimpleTestCase, FormTextMixin):
         self.assertRaisesMessage(forms.ValidationError,
                                  "Password do not match",
                                  form.clean)
+
+
+class ViewTextMixin(object):
+
+    """Docstring for ViewTextMixin. """
+    @classmethod
+    def setupViewTester(cls, url, view_func, expected_html,
+                        status_code=200, session={}):
+        """TODO: Docstring for setupViewTester.
+        :returns: TODO
+
+        """
+        request_factory = RequestFactory()
+        cls.request = request_factory.get(url)
+        cls.request.session = session
+        cls.status_code = status_code
+        cls.url = url
+        cls.view_func = staticmethod(view_func)
+        cls.expected_html = expected_html
+
+    def test_resolves_to_correct_view(self):
+        """TODO: Docstring for test_resolves_to_correct_view.
+        :returns: TODO
+
+        """
+        test_view = resolve(self.url)
+        self.assertEquals(test_view.func, self.view_func)
+
+    def test_returns_appropriate_response_code(self):
+        """TODO: Docstring for test_returns_appropriate_response_code.
+        :returns: TODO
+
+        """
+        resp = self.view_func(self.request)
+        self.assertEquals(resp.status_code, self.status_code)
+
+    def test_returns_correct_html(self):
+        """TODO: Docstring for test_returns_correct_html.
+        :returns: TODO
+
+        """
+        resp = self.view_func(self.request)
+        self.assertEquals(resp.content, self.expected_html)
+
+
+class SignInPageTests(TestCase, ViewTextMixin):
+
+    """Docstring for SignInPageTests. """
+    @classmethod
+    def setUpClass(cls):
+        """TODO: Docstring for setUpClass.
+        :returns: TODO
+
+        """
+        html = render_to_response(
+            'sign_in.html',
+            {
+                'form': SigninForm(),
+                'user': None
+            }
+        )
+
+        ViewTextMixin.setupViewTester(
+            '/sign_in',
+            sign_in,
+            html.content
+        )
+
+
+class SignOutPageTests(TestCase, ViewTextMixin):
+
+    """Docstring for SignOutPageTests. """
+    @classmethod
+    def setUpClass(cls):
+        ViewTextMixin.setupViewTester(
+            '/sign_out',
+            sign_out,
+            "",  # a redirect will return no hmtl
+            status_code=302,
+            session={'user': 'dummy'},
+        )
+
+    def setUp(self):
+        """TODO: Docstring for setUp.
+        :returns: TODO
+
+        """
+        # sign_out clears the session, so let's reset it overtime
+        self.request.session = {'user': 'dummy'}
