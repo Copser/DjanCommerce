@@ -24,6 +24,19 @@ class User(AbstractBaseUser):
         """
         return User.objects.get(pk=uid)
 
+    @classmethod
+    def create(cls, name, email, password, last_4_digits, stripe_id):
+        """TODO: Docstring for create.
+        :returns: TODO
+
+        """
+        new_user = cls(name=name, email=email,
+                       last_4_digits=last_4_digits, stripe_id=stripe_id)
+        new_user.set_password(password)
+
+        new_user.save()
+        return new_user
+
     def __str__(self):
         """TODO: Docstring for __str__.
         :returns: TODO
