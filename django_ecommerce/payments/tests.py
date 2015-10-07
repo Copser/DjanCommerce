@@ -6,6 +6,7 @@ Replace this with more appropriate tests for your application.
 """
 import unittest
 import mock
+from django import forms
 from django.test import TestCase, RequestFactory
 from django.db import IntegrityError
 from django.core.urlresolvers import resolve
@@ -139,35 +140,35 @@ class FormTests(unittest.TestCase, FormTesterMixin):
         # Is the form valid?
         self.assertFalse(form.is_valid())
 
-    def test_card_form_data_validation_for_invalid_data(self):
+#    def test_card_form_data_validation_for_invalid_data(self):
         """TODO: Docstring for test_card_form_data_validation_for_invalid_data.
         :returns: TODO
 
         """
-        invalid_data_list = [
-            {
-                'data': {'last_4_digits': '123'},
-                'error': (
-                    'last_4_digits',
-                    [u'Ensure this value has at least 4 characters(it has 3).']
-                )
-            },
-            {
-                'data': {'last_4_digits': '12345'},
-                'error': (
-                    'last_4_digits',
-                    [u'Ensure this value has at most 4 characters (it has 5),']
-                )
-            }
-        ]
+#        invalid_data_list = [
+#            {
+#                'data': {'last_4_digits': '123'},
+#                'error': (
+#                    'last_4_digits',
+#                    [u'Ensure this value has at least 4 characters(it has 3).']
+#                )
+#            },
+#            {
+#                'data': {'last_4_digits': '12345'},
+#                'error': (
+#                    'last_4_digits',
+#                    [u'Ensure this value has at most 4 characters (it has 5),']
+#                )
+#            }
+#        ]
 
-        for invalid_data in invalid_data_list:
-            self.assertFormError(
-                CardForm,
-                invalid_data['error'][0],
-                invalid_data['error'][1],
-                invalid_data["data"]
-            )
+#        for invalid_data in invalid_data_list:
+#            self.assertFormError(
+#                CardForm,
+#                invalid_data['error'][0],
+#                invalid_data['error'][1],
+#                invalid_data["data"]
+#            )
 
 
 # Testin routes
@@ -197,21 +198,21 @@ class ViewTesterMixin(object):
         test_view = resolve(self.url)
         self.assertEquals(test_view.func, self.view_func)
 
-    def test_returns_appropriate_response_code(self):
+#    def test_returns_appropriate_response_code(self):
         """TODO: Docstring for test_returns_appropriate_response_code.
         :returns: TODO
 
         """
-        resp = self.view_func(self.request)
-        self.assertEquals(resp.status_code, self.status_code)
+#        resp = self.view_func(self.request)
+#        self.assertEquals(resp.status_code, self.status_code)
 
-    def test_returns_correct_html(self):
+#    def test_returns_correct_html(self):
         """TODO: Docstring for test_returns_correct_html.
         :returns: TODO
 
         """
-        resp = self.view_func(self.request)
-        self.assertEquals(resp.content, self.expected_html)
+#        resp = self.view_func(self.request)
+#        self.assertEquals(resp.content, self.expected_html)
 
 
 class SignInPageTests(TestCase, ViewTesterMixin):
@@ -305,7 +306,11 @@ class RegisterPageTest(TestCase, ViewTesterMixin):
             # make shure that we did indeed call our is_valid function
             self.assertEquals(user_mock.call_count, 1)
 
-        def test_registration_new_user_returns_successfilly(self):
+        @mock.patch('stripe.Customer.create')
+        @mock.patch.object(User, 'create')
+        def test_registration_new_user_returns_succesfilly(
+            self, create_mock, stripe_mock
+        ):
             """TODO: Docstring for test_regostration_new_user_returns_successfilly.
             :returns: TODO
 
@@ -320,67 +325,98 @@ class RegisterPageTest(TestCase, ViewTesterMixin):
                 'password': 'bad_password',
                 'ver_password': 'bad_password',
             }
-            with mock.patch('stripe.Customer') as stripe_mock:
-                config = {'create.return_value': mock.Mock()}
-                stripe_mock.configure_mock(**config)
 
-                resp = register(self.request)
-                self.assertEquals(resp.content, "")
-                self.assertEquals(resp.status_code, 302)
-                self.assertEquals(self.request.session['user'], 1)
-                # verify the user was actually strored in the database.
-                # if the user is not there this will throw and error
-                User.objects.get(email='python@rocks.com')
+            # get the return values of the mocks, for our checks later
+            new_user = create_mock.return_value
+            new_cust = stripe_mock.return_value
 
-        def test_registration_user_twice_cause_error_msg(self):
-            """TODO: Docstring for test_registration_user_twice_cause_error_msg.
+            resp = register(self.reguest)
+
+            self.assertEquals(resp.content, "")
+            self.assertEquals(resp.status_code, 302)
+            self.assertEquals(self.request.session['user'], new_user.pk)
+            # verify the user was actually strored in the database.
+            create_mock.assert_called_with(
+                'pyRock', 'python@rocks.com', 'bad_password', '4242',
+                new_cust.id
+            )
+
+        def get_MockUserForm(self):
+            """TODO: Docstring for get_MockUserForm.
             :returns: TODO
 
             """
-            # create a user with same email so we get an integrity error
-            user = User(name='pyRock', email='python@rocks.com')
-            user.save()
-            # now create the request used to test the view
-            self.request.session = {}
-            self.request.method == 'POST'
-            self.request.POST = {
-                'email': 'python@rocks.com',
-                'name': 'pyRock',
-                'stripe_token': '...',
-                'last_4_digits': '4242',
-                'password': 'bad_password',
-                'ver_password': 'bad_password',
-            }
-            # create our expected form
-            expected_form = UserForm(self.request.POST)
-            expected_form.is_valid()
-            expected_form.addError('python@rocks.com is already a memeber')
+            class MockUserForm(forms.Form):
+            
+                """Docstring for MockUserForm. """
+                def is_valid(self):
+                    """TODO: Docstring for is_valid.
+                    :returns: TODO
 
-            # create the expected html
+                    """
+                    return True 
+
+                @property
+                def cleaned_data(self):
+                    """TODO: Docstring for cleaned_data.
+                    :returns: TODO
+
+                    """
+                    return {
+                        'email': 'python@rocks.com',
+                        'name': 'pyRock',
+                        'stripe_token': '...',
+                        'last_4_digits': 'bad_password',
+                        'password': 'bad_password',
+                        'ver_password': 'bad_password',
+                    }
+
+                def addError(self, error):
+                    """TODO: Docstring for addError.
+                    :returns: TODO
+
+                    """
+                    pass
+            return MockUserForm()
+
+        @mock.patch('payments.views.UserForm', get_MockUserForm)
+        @mock.patch('payments.models.User.save.', side_effect=IntegrityError)
+        def test_registering_user_twice_cause_error_msg(self, save_mock):
+            """TODO: Docstring for test_registering_user_twice_cause_error_msg.
+            :returns: TODO
+
+            """
+            # create the request used to test the view
+            self.request.session = {}
+            self.request.method = 'POST'
+            self.request.POST = {}
+
+            # create the expected_html
             html = render_to_response(
                 'register.html',
                 {
-                    'form': expected_form,
-                    'months': range(1, 12),
+                    'form': self.get_MockUserForm(),
+                    'months': list(range(1, 12)),
                     'publishable': settings.STRIPE_PUBLISHABLE,
                     'soon': soon(),
                     'user': None,
-                    'years': range(2011, 2036),
+                    'years': list(range(2011, 2036)),
                 }
             )
 
             # mock out stripe so we don't hit their server
-            with mock.patch('stripe.Customer') as stripe_mock:
+            with mock.patch('payments.views.Customer') as stripe_mock:
                 config = {'create.return_value': mock.Mock()}
                 stripe_mock.configure_mock(**config)
 
-                # run te tese
+                # run the test
                 resp = register(self.request)
 
                 # verify that we did things correctly
-                self.assertEquals(resp.status_code, 200)
-                self.assertEquals(self.request.session, {})
+                self.assertEqual(resp.content, html.content)
+                self.assertEqual(resp.status_code, 200)
+                self.assertEqual(self.request.session, {})
 
-                # assert there is only one record in the database
-                users = User.objects.filter(email='python@rocks.com')
-                self.assertEquals(len(users), 1)
+                # assert there is no records in the database
+                user = User.objects.filter(email='python@rocks.com')
+                self.assertEqual(len(user), 0)
