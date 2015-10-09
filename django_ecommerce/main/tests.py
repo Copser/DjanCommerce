@@ -21,6 +21,7 @@ class MainPageTests(TestCase):
         :returns: TODO
 
         """
+        super(MainPageTests, cls).setUpClass()
         request_factory = RequestFactory()
         cls.request = request_factory.get('/')
         cls.request.session = {}

@@ -12,7 +12,7 @@ from django.db import IntegrityError
 from django.core.urlresolvers import resolve
 from django.shortcuts import render_to_response
 from payments.models import User
-from payments.forms import SigninForm, UserForm, CardForm
+from payments.forms import SigninForm, UserForm
 import django_ecommerce.settings as settings
 from .views import sign_in, sign_out
 from payments.views import soon, register
@@ -20,7 +20,7 @@ from payments.views import soon, register
 
 class UserModelTest(TestCase):
     @classmethod
-    def setUpClass(cls):
+    def setTestData(cls):
         """
         Setup
         """
