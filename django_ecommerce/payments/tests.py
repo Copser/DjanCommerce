@@ -27,6 +27,20 @@ class UserModelTest(TestCase):
         cls.test_user = User(email="j@j.com", name='test_user')
         cls.test_user.save()
 
+    def test_user_to_string_print_email(self):
+        """TODO: Docstring for test_user_to_string_print_email.
+        :returns: TODO
+
+        """
+        self.assertEquals(str(self.test_user), "j@j.com")
+
+    def test_get_by_id(self):
+        """TODO: Docstring for test_get_by_id.
+        :returns: TODO
+
+        """
+        self.assertEqual(User.get_by_id(self.test_user.id), self.test_user)
+
     def test_create_user_function_stores_in_database(self):
         """TODO: Docstring for test_create_user_function_stores_in_database.
         :returns: TODO
@@ -43,26 +57,12 @@ class UserModelTest(TestCase):
         self.assertRaises(
             IntegrityError,
             User.create,
-            'test_user',
+            'test user',
             'j@j.com',
             'jj',
             '1234',
             89
         )
-
-    def test_user_to_string_print_email(self):
-        """TODO: Docstring for test_user_to_string_print_email.
-        :returns: TODO
-
-        """
-        self.assertEquals(str(self.test_user), "j@j.com")
-
-    def test_get_by_id(self):
-        """TODO: Docstring for test_get_by_id.
-        :returns: TODO
-
-        """
-        self.assertEquals(User.get_by_id(1), self.test_user)
 
 
 class FormTesterMixin():
@@ -224,6 +224,7 @@ class SignInPageTests(TestCase, ViewTesterMixin):
         :returns: TODO
 
         """
+        super(SignInPageTests, cls).setUpClass()
         html = render_to_response(
             'sign_in.html',
             {
@@ -244,6 +245,7 @@ class SignOutPageTests(TestCase, ViewTesterMixin):
     """Docstring for SignOutPageTests. """
     @classmethod
     def setUpClass(cls):
+        super(SignOutPageTests, cls).setUpClass()
         ViewTesterMixin.setupViewTester(
             '/sign_out',
             sign_out,
@@ -266,6 +268,7 @@ class RegisterPageTest(TestCase, ViewTesterMixin):
     """Docstring for RegisterPageTest. """
     @classmethod
     def setUpClass(cls):
+        super(RegisterPageTest, cls).setUpClass()
         html = render_to_response(
             'register.html',
             {   
@@ -347,7 +350,6 @@ class RegisterPageTest(TestCase, ViewTesterMixin):
 
             """
             class MockUserForm(forms.Form):
-            
                 """Docstring for MockUserForm. """
                 def is_valid(self):
                     """TODO: Docstring for is_valid.
