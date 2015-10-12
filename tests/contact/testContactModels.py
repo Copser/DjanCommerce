@@ -1,5 +1,5 @@
 from django.test import TestCase, SimpleTestCase
-from contact.views import ContactView
+from contact.forms import ContactView
 from contact.models import ContactForm
 from datetime import datetime, timedelta
 
@@ -14,13 +14,13 @@ class UserModelTest(TestCase):
 
         """
         ContactForm(email='test@dummy.com', name='test').save()
-        ContactForm(email='j@j.com', nema='jj').save()
+        ContactForm(email='j@j.com', name='jj').save()
         cls.firstUser = ContactForm(
             email='first@first.com',
             name='first',
             timestamp=datetime.today() + timedelta(days=2)
         )
-        cls.firstUser()
+        cls.firstUser.save()
 
     def test_contactform_str_returns_email(self):
         """TODO: Docstring for test_contactform_str_returns_email.

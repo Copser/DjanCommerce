@@ -150,3 +150,18 @@ def edit(request):
         },
         context_instance=RequestContext(request)
     )
+
+
+class Customer(object):
+
+    """Docstring for Customer. """
+    @classmethod
+    def create(cls, billing_method="subscription", **kwargs):
+        """TODO: Docstring for create.
+        :returns: TODO
+
+        """
+        if billing_method == "subscription":
+            return stripe.Customer.create(**kwargs)
+        elif billing_method == "one_time":
+            return stripe.Charge.create(**kwargs)
