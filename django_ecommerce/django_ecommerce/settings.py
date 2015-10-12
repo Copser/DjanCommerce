@@ -173,3 +173,6 @@ LOGGING = {
         },
     }
 }
+
+# Test runner
+TEST_RUNNER = 'django.test.runner.DiscoverRunner'
