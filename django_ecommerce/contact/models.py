@@ -15,7 +15,7 @@ class ContactForm(models.Model):
         auto_now_add=True, default=datetime.datetime.now
     )
 
-    def __unicode__(self):
+    def __str__(self):
         """TODO: to be defined1. """
         return self.email
 
