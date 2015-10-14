@@ -1,5 +1,5 @@
 from django.db import models
-import datetime
+# import datetime
 
 # Create your models here.
 
@@ -11,9 +11,7 @@ class ContactForm(models.Model):
     email = models.EmailField(max_length=150)
     topic = models.CharField(max_length=200)
     message = models.CharField(max_length=1000)
-    timestamp = models.DateTimeField(
-        auto_now_add=True, default=datetime.datetime.now
-    )
+    timestamp = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
         """TODO: to be defined1. """
