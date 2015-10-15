@@ -1,6 +1,6 @@
 from payments.views import sign_in, sign_out, register, soon
 from django.test import TestCase, RequestFactory
-from payments.models import User
+from payments.models import User, UnpaidUsers
 from payments.forms import SigninForm, UserForm
 from django.db import IntegrityError
 from django.core.urlresolvers import resolve
@@ -193,6 +193,11 @@ class RegisterPageTests(TestCase, ViewTesterMixin):
             users = User.objects.filter(email="python@rocks.com")
             self.assertEquals(len(users), 1)
             self.assertEquals(users[0].stripe_id, '')
+
+            # for UnpaidUsers
+            unpaid = UnpaidUsers.objects.filter(email="python@rocks.com")
+            self.assertEquals(len(unpaid), 1)
+            self.assertIsNotNone(unpaid[0].last_notification)
 
     def get_mock_cust():
         """TODO: Docstring for get_mock_cust.
