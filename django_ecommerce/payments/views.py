@@ -89,11 +89,11 @@ def register(request):
                     user = User.create(cd['name'], cd['email'], cd['password'],
                                        cd['last_4_digits'], stripe_id="")
 
-                if customer:
-                    user.stripe_id = customer.id
-                    user.save()
-                else:
-                    UnpaidUsers(email=cd['email']).save()
+                    if customer:
+                        user.stripe_id = customer.id
+                        user.save()
+                    else:
+                        UnpaidUsers(email=cd['email']).save()
 
             except IntegrityError:
                 import traceback
