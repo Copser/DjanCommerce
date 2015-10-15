@@ -82,15 +82,12 @@ def register(request):
             # )
 
             cd = form.cleaned_data
+            from django.db import transaction
 
             try:
-                user = User.create(
-                    cd['name'],
-                    cd['email'],
-                    cd['password'],
-                    cd['last_4_digits'],
-                    stripe_id=''
-                )
+                with transaction.atomic():
+                    user = User.create(cd['name'], cd['email'], cd['password'],
+                                       cd['last_4_digits'], stripe_id="")
 
                 if customer:
                     user.stripe_id = customer.id
