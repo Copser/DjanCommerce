@@ -3,10 +3,11 @@ from django.http import HttpResponseRedirect
 from django.shortcuts import render_to_response
 from django.template import RequestContext
 from payments.forms import SigninForm, CardForm, UserForm
-from payments.models import User
+from payments.models import User, UnpaidUsers
 import django_ecommerce.settings as settings
 import stripe
 import datetime
+import socket
 # Create your views here.
 
 stripe.api_key = settings.STRIPE_SECRET
@@ -67,7 +68,7 @@ def register(request):
         if form.is_valid():
             # update based on your billing method (subscription vs
             # one time)
-            customer = stripe.Customer.create(
+            customer = Customer.create(
                 email=form.cleaned_data['email'],
                 description=form.cleaned_data['name'],
                 card=form.cleaned_data['stripe_token'],
@@ -81,16 +82,23 @@ def register(request):
             # )
 
             cd = form.cleaned_data
+            from django.db import transaction
+
             try:
-                user = User.cleaned_data(
-                    cd['name'],
-                    cd['email'],
-                    cd['password'],
-                    cd['last_4_digits'],
-                    customer.id
-                )
+                with transaction.atomic():
+                    user = User.create(cd['name'], cd['email'], cd['password'],
+                                       cd['last_4_digits'], stripe_id="")
+
+                    if customer:
+                        user.stripe_id = customer.id
+                        user.save()
+                    else:
+                        UnpaidUsers(email=cd['email']).save()
+
             except IntegrityError:
-                form.addError(cd['email'] + ' is already a member')
+                import traceback
+                form.addError(cd['email'] + ' is already a member' +
+                              traceback.format_exc())
                 user = None
             else:
                 request.session['user'] = user.pk
@@ -161,7 +169,10 @@ class Customer(object):
         :returns: TODO
 
         """
-        if billing_method == "subscription":
-            return stripe.Customer.create(**kwargs)
-        elif billing_method == "one_time":
-            return stripe.Charge.create(**kwargs)
+        try:
+            if billing_method == "subscription":
+                return stripe.Customer.create(**kwargs)
+            elif billing_method == "one_time":
+                return stripe.Charge.create(**kwargs)
+        except socket.error:
+            return None
