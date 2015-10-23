@@ -141,6 +141,7 @@ INSTALLED_APPS = (
     'main',
     'contact',
     'payments',
+    'crispy_forms',
 )
 
 SESSION_SERIALIZER = 'django.contrib.sessions.serializers.JSONSerializer'
@@ -176,3 +177,6 @@ LOGGING = {
 
 # Test runner
 TEST_RUNNER = 'django.test.runner.DiscoverRunner'
+
+# Crispy form setup
+CRISPY_TEMPLATE_PACK = 'bootstrap3'
